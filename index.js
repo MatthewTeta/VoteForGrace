@@ -59,7 +59,7 @@ const vote = async (i) => {
   return percent;
 };
 
-const run = async (j) => {
+const run = async (j, percent) => {
   console.log(j);
   let i = 0;
   let promises = [];
@@ -71,13 +71,13 @@ const run = async (j) => {
   }
   percentages = await Promise.all(promises);
   // console.log(percentages);
-  const percent = percentages.reduce((best, current) => {
+  const new_percent = percentages.reduce((best, current) => {
     const curr = parseInt(current.split("%")[0], 10);
     if (curr > best) return curr;
     return best;
   }, 0);
-  console.log(`${percent}%`);
-  run(j + 1, percent);
+  if (new_percent > percent) console.log(`${new_percent}%`);
+  run(j + 1, new_percent);
 };
 run(0, 0);
 console.log("Hello");

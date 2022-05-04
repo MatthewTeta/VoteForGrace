@@ -24,7 +24,11 @@ const vote = async (i) => {
     let voteButton = document.querySelector(".vote-button");
     voteButton.click();
   });
-  await page.waitForNavigation({ waitUntil: "networkidle2" });
+  try {
+    await page.waitForNavigation({ waitUntil: "networkidle2" });
+  } catch (e) {
+    return 0;
+  }
   await page.evaluate((SEARCH_STRING) => {
     let labels = document.querySelectorAll(".pds-answer-text");
     labels.forEach((elem) => {

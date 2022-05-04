@@ -1,0 +1,15 @@
+{
+  "name": "voteforgrace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "puppeteer": "^13.7.0"
+  }
+}

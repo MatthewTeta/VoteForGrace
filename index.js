@@ -60,6 +60,7 @@ const vote = async (browser) => {
       }),
     SEARCH_STRING
   );
+  await page.close();
   return percent;
 };
 

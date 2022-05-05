@@ -1,13 +1,14 @@
 require("dotenv").config();
 const puppeteer = require("puppeteer");
+const fs = require("fs");
 
-const { POLL_ID, SEARCH_STRING, BATCH_SIZE } = process.env;
+const { POLL_ID, SEARCH_STRING, BATCH_SIZE, FILENAME } = process.env;
 console.log(`POLL_ID:\t${POLL_ID}`);
 console.log(`SEARCH_STRING:\t${SEARCH_STRING}`);
 console.log(`BATCH_SIZE:\t${BATCH_SIZE}`);
+console.log(`FILENAME:\t${FILENAME}`);
 
-const vote = async (i) => {
-  const browser = await puppeteer.launch({ headless: true });
+const vote = async (browser) => {
   const page = await browser.newPage();
   await page.goto(`https://poll.fm/${POLL_ID}/`);
   await page.evaluate((SEARCH_STRING) => {
@@ -59,29 +60,37 @@ const vote = async (i) => {
       }),
     SEARCH_STRING
   );
-  await browser.close();
   return percent;
 };
 
-const run = async (j, percent) => {
-  console.log(j);
+const run = async (browser, j) => {
   let i = 0;
   let promises = [];
   while (i < BATCH_SIZE) {
-    promises.push(vote(i));
+    promises.push(vote(browser));
     // await vote(i);
     // console.log(i);
     i++;
   }
   percentages = await Promise.all(promises);
   // console.log(percentages);
-  const new_percent = percentages.reduce((best, current) => {
-    const curr = parseInt(current.split("%")[0], 10);
-    if (curr > best) return curr;
-    return best;
-  }, 0);
-  if (new_percent > percent) console.log(`${new_percent}%`);
-  run(j + 1, new_percent);
+  // const new_percent = percentages.reduce((best, current) => {
+  //   const curr = parseInt(current.split("%")[0], 10);
+  //   if (curr > best) return curr;
+  //   return best;
+  // }, 0);
+  const str = `${(j + 1) * BATCH_SIZE}: ${percentages.join(", ")}\n`;
+  fs.writeFile(FILENAME, str, (err) => {
+    if (err) console.error(err);
+  });
+  return await run(browser, j + 1);
 };
-run(0, 0);
-console.log("Hello");
+
+const start = async () => {
+  const browser = await puppeteer.launch({ headless: true });
+  const context = await browser.createIncognitoBrowserContext();
+  await run(context, 0, 0);
+  await browser.close();
+};
+start();
+// console.log("Hello");

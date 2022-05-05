@@ -28,7 +28,7 @@ const vote = async (browser) => {
   try {
     await page.waitForNavigation({ waitUntil: "networkidle2" });
   } catch (e) {
-    return 0;
+    return "0%";
   }
   await page.evaluate((SEARCH_STRING) => {
     let labels = document.querySelectorAll(".pds-answer-text");
